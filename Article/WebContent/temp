@@ -1,0 +1,97 @@
+		<!-- 内容区域（待做） -->
+	<div style="border:1px solid #ccc">
+		<br><br>
+		<div class="category">
+			<div class="title">连载小说</div>
+			<ul class="items">
+			
+				<li class="item">
+					<div class="item-banner">
+						<div class="item-header">生活中总是充满了乐趣</div>
+						<div class="item-name">聊聊我的大学室友</div>
+						<div class="item-author">@张三 著</div>
+					</div>
+					<div class="item-description">那些回忆，那些事。。。</div>
+				</li>
+					
+				<li class="item"></li>
+				<li class="item"></li>
+				<div style="clear:both"></div>
+			</ul>
+		</div>
+		
+		
+		<div class="category">
+			<div class="title">编程代码类</div>
+			<ul class="items">
+				
+					<li class="item" >
+						<div class="item-banner">
+							<div class="item-header">Java Web实用技术</div>
+							<div class="item-name" title="JavaScript闭包详解">JavaScript闭包详解</div>
+							<div class="item-author">@Jack 著</div>
+						</div>
+						<div class="item-description">JavaScript闭包详解</div>
+					</li>
+				
+					<li class="item" >
+						<div class="item-banner">
+							<div class="item-header">Java Web实用技术</div>
+							<div class="item-name" title="SpringMVC入门教程">SpringMVC入门教程</div>
+							<div class="item-author">@Jack 著</div>
+						</div>
+						<div class="item-description">SpringMVC入门教程</div>
+					</li>
+				
+					<li class="item" >
+						<div class="item-banner">
+							<div class="item-header">Java Web实用技术</div>
+							<div class="item-name" title="maven安装">maven安装</div>
+							<div class="item-author">@Jack 著</div>
+						</div>
+						<div class="item-description">maven安装和环境变量配置</div>
+					</li>
+				
+					<li class="item" >
+						<div class="item-banner">
+							<div class="item-header">Java Web实用技术</div>
+							<div class="item-name" title="tomcat安装">tomcat安装</div>
+							<div class="item-author">@Jack 著</div>
+						</div>
+						<div class="item-description">tomcat安装和环境变量配置</div>
+					</li>
+				
+					<li class="item" >
+						<div class="item-banner">
+							<div class="item-header">Java Web实用技术</div>
+							<div class="item-name" title="如何将MyEclipse项目导入eclipse">如何将MyEclipse项目导入eclipse</div>
+							<div class="item-author">@Jack 著</div>
+						</div>
+						<div class="item-description">解决项目导入的冲突问题...</div>
+					</li>
+				
+					<li class="item">
+						<div class="item-banner">
+							<div class="item-header">Java Web实用技术</div>
+							<div class="item-name" title="JDK安装">JDK安装</div>
+							<div class="item-author">@Jack 著</div>
+						</div>
+						<div class="item-description">JDK安装和环境变量配置</div>
+					</li>
+				
+				<div style="clear:both"></div>
+			</ul>
+		</div>
+		
+		<div class="category">
+			<div class="title">干货分享</div>
+			<ul class="items">
+				<li class="item"></li>
+				<li class="item"></li>
+				<li class="item"></li>
+				<div style="clear:both"></div>
+			</ul>
+		</div>
+	
+	</div>
+	

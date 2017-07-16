@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- UserMapper接口的SQL -->
+
+<!-- namespace:需要映射的接口名 -->
+<mapper namespace="org.fkit.mapper.UserMapper">
+	<!-- campus.user_defined AS "campus.user_defined" 表示映射Bean中属性campus的UserDifined属性-->
+	<select id="selectAllUser" resultType="org.fkit.model.User">
+		SELECT 
+			user.id,
+			user.phone,
+			user.username,
+			user.password,
+			user.email,
+			user.campus_id,
+			user.register_time,
+			user.sex,
+			user.major,
+			user.last_login,
+			user.credit_rating,
+			user.head_pic,
+			user.token,
+			user.is_del,
+			campus.id AS "campus.id",
+			campus.name AS "campus.name",
+			campus.city AS "campus.city",
+			campus.status AS "campus.status",
+			campus.user_defined AS "campus.user_defined"
+		FROM user LEFT JOIN  campus on user.campus_id = campus.id;
+	</select>
+
+	<select id="selectUserByToken" resultType="org.fkit.model.User">
+		select * from user where token = #{token}	
+	</select>
+</mapper>

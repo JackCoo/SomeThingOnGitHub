@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- bean的配置文件 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- 声明bean，Spring利用默认构造器创建实例。 -->
+	<bean id="hello" class="com.one.hello.Hello">
+       <property name="msg" value="Hello World!"/>
+	</bean>
+     
+    <!-- 设值注入 -->
+	<bean id="initAndDes" class="com.one.initdestoty.InitAndDes" init-method="init" destroy-method="destory">
+       <property name="msg" value="Hello InitAndDes"/>
+	</bean>
+   
+	<!-- 等同于@Bean -->
+	<bean id="compactDisc" class="com.one.xmlconfig.beanwiring.soundsystem.HeyJudy"></bean>
+
+	<!-- 构造器注入引用，字面量使用value -->
+	<bean id="cDPlayer" class="com.one.xmlconfig.beanwiring.soundsystem.CDPlayer">
+		<constructor-arg ref="compactDisc"></constructor-arg>
+	</bean>
+
+	
+	<!-- 注入List集合 -->
+	<bean id="cDPlayer2" class="com.one.xmlconfig.beanwiring.soundsystem.CDPlayer">
+		<constructor-arg ref="compactDisc"/>
+		<constructor-arg>
+			<list>
+				<!-- 引用 -->
+				<ref bean="bean1"/>
+				<ref bean="bean2"/>
+				<!-- 字面量 -->
+				<value>value1</value>
+				<value>value1</value>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+		
+</beans>

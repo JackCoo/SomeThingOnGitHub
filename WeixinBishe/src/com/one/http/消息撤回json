@@ -1,0 +1,180 @@
+分析：
+1.MsgType": 10002，代表系统消息？
+
+2.Content分析-xml格式
+转义前
+<sysmsg type="revokemsg"><revokemsg><session>2020424362@chatroom</session><oldmsgid>1061696329</oldmsgid><msgid>2522135580068158664</msgid><replacemsg><![CDATA[ä½ æ’¤å›žäº†ä¸€æ¡æ¶ˆæ¯]]></replacemsg></revokemsg></sysmsg>
+格式化
+<sysmsg type="revokemsg">
+  <revokemsg>
+    <session>2020424362@chatroom</session>
+    <oldmsgid>1061696329</oldmsgid>
+    <msgid>2522135580068158664</msgid>
+    <replacemsg><![CDATA[你撤回了一条消息]]></replacemsg>
+  </revokemsg>
+</sysmsg>
+字段分析
+msgid：撤回的消息id？
+
+
+{
+    "BaseResponse": {
+        "Ret": 0,
+        "ErrMsg": ""
+    },
+    "AddMsgCount": 1,
+    "AddMsgList": [
+        {
+            "MsgId": "4557478606545666549",
+            "FromUserName": "@@acc800e9b591d5736b2f065521e1330db94aabc9b510270dac32d87764d175e2",
+            "ToUserName": "@d0ae38f2e646c595b06a28cb08a8bc1552a70dc82bb4b1b0b825b9043e1f7ffc",
+            "MsgType": 10002,
+            "Content": "&lt;sysmsg type=\"revokemsg\"&gt;&lt;revokemsg&gt;&lt;session&gt;2020424362@chatroom&lt;/session&gt;&lt;oldmsgid&gt;1061696329&lt;/oldmsgid&gt;&lt;msgid&gt;2522135580068158664&lt;/msgid&gt;&lt;replacemsg&gt;&lt;![CDATA[ä½ æ’¤å›žäº†ä¸€æ¡æ¶ˆæ¯]]&gt;&lt;/replacemsg&gt;&lt;/revokemsg&gt;&lt;/sysmsg&gt;",
+            "Status": 4,
+            "ImgStatus": 1,
+            "CreateTime": 1498371831,
+            "VoiceLength": 0,
+            "PlayLength": 0,
+            "FileName": "",
+            "FileSize": "",
+            "MediaId": "",
+            "Url": "",
+            "AppMsgType": 0,
+            "StatusNotifyCode": 0,
+            "StatusNotifyUserName": "",
+            "RecommendInfo": {
+                "UserName": "",
+                "NickName": "",
+                "QQNum": 0,
+                "Province": "",
+                "City": "",
+                "Content": "",
+                "Signature": "",
+                "Alias": "",
+                "Scene": 0,
+                "VerifyFlag": 0,
+                "AttrStatus": 0,
+                "Sex": 0,
+                "Ticket": "",
+                "OpCode": 0
+            },
+            "ForwardFlag": 0,
+            "AppInfo": {
+                "AppID": "",
+                "Type": 0
+            },
+            "HasProductId": 0,
+            "Ticket": "",
+            "ImgHeight": 0,
+            "ImgWidth": 0,
+            "SubMsgType": 0,
+            "NewMsgId": 4557478606545666600,
+            "OriContent": ""
+        }
+    ],
+    "ModContactCount": 0,
+    "ModContactList": [],
+    "DelContactCount": 0,
+    "DelContactList": [],
+    "ModChatRoomMemberCount": 0,
+    "ModChatRoomMemberList": [],
+    "Profile": {
+        "BitFlag": 0,
+        "UserName": {
+            "Buff": ""
+        },
+        "NickName": {
+            "Buff": ""
+        },
+        "BindUin": 0,
+        "BindEmail": {
+            "Buff": ""
+        },
+        "BindMobile": {
+            "Buff": ""
+        },
+        "Status": 0,
+        "Sex": 0,
+        "PersonalCard": 0,
+        "Alias": "",
+        "HeadImgUpdateFlag": 0,
+        "HeadImgUrl": "",
+        "Signature": ""
+    },
+    "ContinueFlag": 0,
+    "SyncKey": {
+        "Count": 8,
+        "List": [
+            {
+                "Key": 1,
+                "Val": 661696021
+            },
+            {
+                "Key": 2,
+                "Val": 661696330
+            },
+            {
+                "Key": 3,
+                "Val": 661696213
+            },
+            {
+                "Key": 11,
+                "Val": 661696057
+            },
+            {
+                "Key": 13,
+                "Val": 661611042
+            },
+            {
+                "Key": 201,
+                "Val": 1498371831
+            },
+            {
+                "Key": 1000,
+                "Val": 1498362841
+            },
+            {
+                "Key": 1001,
+                "Val": 1498362871
+            }
+        ]
+    },
+    "SKey": "",
+    "SyncCheckKey": {
+        "Count": 8,
+        "List": [
+            {
+                "Key": 1,
+                "Val": 661696021
+            },
+            {
+                "Key": 2,
+                "Val": 661696330
+            },
+            {
+                "Key": 3,
+                "Val": 661696213
+            },
+            {
+                "Key": 11,
+                "Val": 661696057
+            },
+            {
+                "Key": 13,
+                "Val": 661611042
+            },
+            {
+                "Key": 201,
+                "Val": 1498371831
+            },
+            {
+                "Key": 1000,
+                "Val": 1498362841
+            },
+            {
+                "Key": 1001,
+                "Val": 1498362871
+            }
+        ]
+    }
+}

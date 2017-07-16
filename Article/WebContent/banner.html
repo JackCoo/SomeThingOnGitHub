@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <title>轮播图demo</title>
+        <meta charset="UTF-8">
+        <style type="text/css">
+			* {
+			    padding: 0;
+			    margin: 0;
+			}
+			ul li {list-style: none;}
+			
+			.banner {
+			    height: 380px;
+			    
+			    margin-top: 20px;
+			    position: relative;
+			    overflow: hidden;/* 溢出隐藏 */
+			}
+			.banner .content {
+			    width: 1060px;
+			    height: 450px;
+			    margin: 20px auto;
+			    position: relative;
+			}
+			
+			.banner ul li img {
+			    width: 1024px ;
+			    height: 380px ;
+			}
+			.banner .content ul{
+			    width: 10000px;
+			}
+			
+			/* 通用的class 减少重复代码 */
+			.fl {float: left;}
+			.fr {float: right;}
+			
+			.btn_left, .btn_right{
+			    display: inline-block;
+			    width: 21px;
+			    height: 150px;
+			    background: url(../banner_tb.png) no-repeat;
+			    position: absolute;
+			    left: -38px;
+			    top: 90px;
+			    opacity: 0;/* 透明度为0，即隐藏 */
+			}
+			
+			.btn_right{
+			    background-position: -29px 0;
+			    position: absolute;
+			    left: 1041px;
+			    top: 90px;
+			}
+			
+			.banner .content:hover .btn_left{
+			    opacity: 1;
+			}
+			
+			.banner .content:hover .btn_right{
+			    opacity: 1;
+			}
+        </style>
+    </head>
+    <body>
+        
+		<div class='banner'>
+		
+		    <div class='content'>
+		        <ul>
+		        	<i class='btn_left'></i><!-- 斜体字标签 -->
+					<i class='btn_right'></i>
+		        
+		        	<!-- 轮播图片 -->
+		            <li>
+		                <a href="javascript:void(0)">
+		                    <img src="1.jpg "/>
+		                </a>
+		            </li>
+		            <li>
+		                <a href="javascript:void(0)">
+		                    <img src="2.jpg "/>
+		                </a>
+		            </li>
+		            <li>
+		                <a href="javascript:void(0)">
+		                    <img src="3.jpg "/>
+		                </a>
+		            </li>
+		            <li>
+		                <a href="javascript:void(0)">
+		                    <img src="4.jpg "/>
+		                </a>
+		            </li>
+		            <li>
+		                <a href="javascript:void(0)">
+		                    <img src="5.jpg "/>
+		                </a>
+		            </li>
+		            
+		        </ul>
+		    </div>
+		</div>        
+
+		<script type="text/javascript">
+			var leftBtn = $('.btn_left').eq(0); //左按钮
+			var rightBtn = $('.btn_right').eq(0);//右按钮
+			var ul = $('.banner .content ul').eq(0);
+			rightBtn.on('click',function(){
+			    ul.animate({marginLeft : -2048},1000);
+			});
+		</script>
+		
+		
+    </body>
+</html>

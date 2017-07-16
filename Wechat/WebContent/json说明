@@ -1,0 +1,84 @@
+//历史数据json
+
+//参考网页
+//http://www.lewei50.com/m/pm/dust_history/19754?s=1
+
+{
+    "Data": [
+        {
+            "dt": "/Date(1487296942000)/",
+            "v": [
+                1,		//页面第一个框的历史数据 	 温度
+                2,		//湿度
+                21,	
+                30,		//空气质量pm25
+                0.02,	//甲醛
+                null
+            ]
+        },
+        {
+            "dt": "/Date(1487839077000)/",
+            "v": [
+                null,
+                null,
+                36,
+                51,
+                0,
+                null
+            ]
+        },
+        {
+            "dt": "/Date(1487839679000)/",
+            "v": [
+                null,
+                null,
+                35,
+                50,
+                0,
+                null
+            ]
+        },
+        {
+            "dt": "/Date(1487840281000)/",
+            "v": [
+                null,
+                null,
+                35,
+                50,
+                0,
+                null
+            ]
+        },
+        {
+            "dt": "/Date(1487840882000)/",
+            "v": [
+                null,
+                null,
+                35,
+                50,
+                0,
+                null
+            ]
+        },
+        {
+            "dt": "/Date(1487841486000)/",
+            "v": [
+                null,
+                null,
+                31,
+                44,
+                0,
+                null
+            ]
+        }
+    ],
+    "Successful": true,
+    "Message": null
+}
+
+
+
+//饼图json 每个数据的饼图需单独请求
+//请求URL
+//http://www.lewei50.com/home/DeviceHistoryDataPieJson?deviceId=19754&column=H1&startValue=45&endValue=60&startTime=
+{"Data":[31207,11229],"Successful":true,"Message":null}

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!-- GoodsMapper接口的SQL -->
+
+<mapper namespace="org.fkit.mapper.GoodsMapper">
+	<select id="selectGoodById" resultType="org.fkit.model.Goods">
+		select * from goods where id = #{Id}
+	</select>
+	
+	<select id="selectLastGoods" resultType="org.fkit.model.Goods">
+		select * from goods where id  &lt;= #{maxId} limit #{num}
+	</select>
+
+	<update id="updateAuctionPrice">
+		update goods set best_bid_price = #{price}, best_bid_user_id = #{userId} where id = #{goodsId}  and best_bid_price &lt; #{price}
+	</update>
+	
+	<insert id="insertAuctionRecord">
+		insert into  auction_record values (null,#{goodsId},#{userId},#{price},now())
+	</insert>
+	
+	<update id="updateNonAuctionForBuy">
+			update goods set owner = #{userId}, status = 11 where id = #{goodsId} and status = 10 and is_del = 0;
+	</update>
+</mapper>

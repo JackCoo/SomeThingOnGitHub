@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0046)http://www.lewei50.com/m/pm/dust_info/19239?s= -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>颗粒物检测</title>
+    <link href="./files/weui.min.css" rel="stylesheet">
+    <link href="./files/styles.css" rel="stylesheet">
+
+</head>
+<body>
+    
+
+
+
+<script src="./files/hm.js.下载"></script><script src="./files/jquery-2.1.4.js.下载"></script>
+<img src="./files/sun.png" style="height:0;">
+ 
+    <link href="./files/style5.css" rel="stylesheet">
+ 
+<script>
+    setInterval("window.location.reload()", 300000);
+
+    var valueArea = [[-999, '优', '#00E400'], [50, '良', '#FFFF00'], [100, '轻度污染', '#FF7E00'], [150, '中度污染', '#FF0000'], [200, '重度污染', '#99004C'], [300, '严重污染', '#7E0023'], [500, '爆表', '#000000']];
+    $(function () {
+        setAQI();
+        getCityAQI();
+    });
+    var setAQI = function () {
+        var aqi=204;
+        for (var i = valueArea.length-1; i >= 0; i--) {
+            var vv=valueArea[i];
+            if(aqi>vv[0]){
+                $("#aqitext").text(vv[1]);
+                $("#aqitext").css('color',vv[2]);
+                $("#aqispan").css('background-color',vv[2]);
+                break;
+            }
+        }
+    };
+    var getCityAQI=function(){
+        $.getJSON("/m/htdust/CityAQI/19239",function(data){
+            if(data.city){
+                $("#cityAQI").html(data.city+":"+data.aqi);
+                var va=getVA(data.aqi);
+                $("#cityAQI").css('color',va[2]);
+            }
+        });
+        //$("#cityAQI").load("/m/htdust/CityAQI/19239");
+    };
+
+    var getVA=function(aqi){
+        for (var i = valueArea.length-1; i >= 0; i--) {
+            var vv=valueArea[i];
+            if(aqi>vv[0]){
+                return vv;
+            }
+        }
+        return valueArea[0];
+    };
+</script>
+<!------------------内容--------------->
+<main id="main" class="panel">
+            <a href="http://www.lewei50.com/pm/st/index/9" class="btn-hamburger js-slideout-toggle"><img src="./files/map.png"></a>
+
+    <!------------------首页内容--------------->
+    <div id="index">
+        <!------------------设置按钮--------------->
+
+            <div class="basics_date">
+
+                <span>A Q I</span>
+                <p onclick="location.href=&#39;/m/pm/dust_history/19239?s=3&#39;">99</p>
+                <span id="cityAQI" style="font-size:16px;"></span>
+            </div>
+            <div class="decorate"><img src="./files/decorate.jpg"></div>
+            <div class="numerical_value">
+                <div class="air">
+                    <div class="title" style="text-align:center;width:90px;"><p></p><span id="aqitext" style="color: rgb(153, 0, 76);">重度污染</span></div>
+                    <div class="cont">
+                        <div class="date_con">PM2.5 ug/m3<span>154</span></div>
+                        <div class="date_pic"><span id="aqispan" style="width: 30%; background-color: rgb(153, 0, 76);"></span></div>
+                    </div>
+                </div>
+                <div class="temperature_humidity">
+                    <ul>
+                            <li onclick="location.href=&#39;/m/pm/dust_history/19239?s=0&#39;"><img src="./files/i0.png"><p>温度<br>19℃</p></li>
+                            <li onclick="location.href=&#39;/m/pm/dust_history/19239?s=1&#39;"><img src="./files/i1.png"><p>湿度<br>40%</p></li>
+                            <li onclick="location.href=&#39;/m/pm/dust_history/19239?s=4&#39;"><img src="./files/i4.png"><p>甲醛<br>0.025mg/m3</p></li>
+                        
+                        <div class="clear"></div>
+                    </ul>
+                </div>
+                <div class="go_chart">
+                    <a href="http://www.lewei50.com/m/pm/dust_history/19239?s=3"><img src="./files/icon1.png">最近一天舒适度：14%</a>
+                </div>
+                <div class="update_time">
+                    <p style="color:#74aac8">更新时间：2017-02-02 16:29</p>
+                </div>
+            </div>
+
+    </div>
+</main>
+
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?6a809ea73aa4bcaedc73581347a7ef36";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+</body></html>

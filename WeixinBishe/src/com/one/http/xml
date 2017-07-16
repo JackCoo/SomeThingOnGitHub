@@ -1,0 +1,8 @@
+<sysmsg type="revokemsg">
+  <revokemsg>
+    <session>2020424362@chatroom</session>
+    <oldmsgid>1061696329</oldmsgid>
+    <msgid>2522135580068158664</msgid>
+    <replacemsg><![CDATA[你撤回了一条消息]]></replacemsg>
+  </revokemsg>
+</sysmsg>

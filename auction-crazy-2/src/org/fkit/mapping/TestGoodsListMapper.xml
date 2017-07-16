@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- TestGoodsList接口的SQL -->
+
+<!-- namespace:需要映射的接口名 -->
+<mapper namespace="org.fkit.mapper.TestGoodsMapper">
+	<!-- id:映射的方法名 resultType：不填会报错-->
+	<select id="findAll" resultType="org.fkit.model.Goods">
+		select * from goods
+	</select>
+
+</mapper>

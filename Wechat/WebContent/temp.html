@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0050)http://www.lewei50.com/m/pm/dust_history/19239?s=0 -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>颗粒物检测</title>
+    <link href="./temp_files/weui.min.css" rel="stylesheet">
+    <link href="./temp_files/styles.css" rel="stylesheet">
+
+</head>
+<body>
+    
+
+
+<style>
+    li.cur {
+        font-weight: bold;
+        background-color: #2D6FB3;
+    }
+</style>
+<script src="./temp_files/jquery-2.1.4.js"></script>
+<script src="./temp_files/amcharts.js"></script>
+<script src="./temp_files/highcharts.js" type="text/javascript"></script>
+
+<script>
+    
+    var currentDeviceId=19239;
+    var startTime = null;
+    var currentSensor = 0;
+    var currentReportType = 0;//0=line 1=pie
+    var times = ['', '2017/2/1 16:34:44', '2017/1/26 16:34:44', '2017/1/2 16:34:44'];
+    var sensors = [{ name: 'T1', startValue: 16, endValue: 28,unit:'℃',precision:1 }, { name: 'H1', startValue: 45, endValue: 60,unit:'%',precision:1 }, { name: 'Dust', startValue: 0, endValue: 100,precision:1 }, { name: 'AQI', startValue: 0, endValue: 100,unit:'',precision:0 },{ name: 'hcho', startValue: 0, endValue: 0.08,unit:'mg/m3',precision:3 },{ name: 'CO2', startValue: 0, endValue: 1000,unit:'ppm',precision:0 }]
+    var showLine = function (i) {
+        startTime = times[i];
+        $("#timeSelect li a").removeClass('cur');
+        $("#timeSelect li:eq(" + i + ") a").addClass('cur');
+        loadReport();
+    }
+
+    var changeSensor = function (i) {
+        currentSensor = i;
+        $('#sensors li.cur').removeClass('cur');
+        $("#ds"+i).addClass('cur');
+        loadReport();
+    };
+    var changeReportType = function (i) {
+        currentReportType = i;
+        $('#reportTypeSelect a.cur').removeClass('cur');
+        $('#reportTypeSelect a:eq(' + i + ')').addClass('cur');
+        loadReport();
+        if (i == 0)
+            $("#time0A").text('实时');
+        else
+            $("#time0A").text('全部');
+    };
+    var loadLineReport = function () {
+        $("#chartDiv").html('<div style="width:100%;text-align:center;"> </div>');
+        showLoading();
+        //此处获取json数据
+        $.getJSON("./testDeviceHistoryDataJson.json", { deviceId: currentDeviceId, startTime: startTime }, function (r) {
+            hideLoading();
+            if (r.Successful == false) {
+                $("#chartDiv").html('<div style="color:gray;padding-top:80px;text-align:center;">' + r.Message + '</div>');
+                return;
+            }
+            var data = r.Data;
+
+            if (data == undefined || data == null || data.length == 0) {
+                $("#chartDiv").html('<div style="color:white;padding-top:80px;text-align:center;">暂无数据<br/>请确认已通过Airkiss设置联网<br/>如已设置完毕，请等待5分钟</div>');
+                return;
+            }
+            var realData = new Array();
+            for (var i = 0; i < data.length; i++) {
+                //data.Datas[i].dt = new Date(parseInt(data.Datas[i].dt.replace('\/Date(', '').replace(')/', '')));
+                //if (data.Datas[i].a2 == null) data.Datas[i].a2="";
+                var obj = { dt: new Date(parseInt(data[i].dt.replace('\/Date(', '').replace(')/', ''))) };
+                if (data[i].v != null && data[i].v.length > 0) obj.a1 = parseFloat(data[i].v[0]).toFixed(1);
+                if (data[i].v != null && data[i].v.length > 1) obj.a2 = parseFloat(data[i].v[1]).toFixed(1);
+                if (data[i].v != null && data[i].v.length > 2) obj.a3 = parseFloat(data[i].v[2]).toFixed(0);
+                if (data[i].v != null && data[i].v.length > 3) obj.a4 = parseFloat(data[i].v[3]).toFixed(0);
+                if (data[i].v != null && data[i].v.length > 4) obj.a5 = parseFloat(data[i].v[4]).toFixed(3);
+                if (data[i].v != null && data[i].v.length > 5) obj.a6 = parseFloat(data[i].v[5]).toFixed(0);
+                realData.push(obj);
+            }
+
+            // SERIAL CHART
+            var chart = new AmCharts.AmSerialChart();
+            chart.marginTop = 10;
+            chart.pathToImages = "/content/js/amcharts/images/";
+            chart.zoomOutButton = {
+                backgroundColor: '#000000',
+                backgroundAlpha: 0.15
+            };
+            chart.dataProvider = realData;//data.Datas;
+            chart.categoryField = "dt";
+
+            // category
+            var categoryAxis = chart.categoryAxis;
+            categoryAxis.parseDates = true; // as our data is date-based, we set parseDates to true
+            categoryAxis.dashLength = 1;
+            categoryAxis.minPeriod = "ss";
+            categoryAxis.gridAlpha = 0.2;
+            categoryAxis.gridColor = "white";
+            categoryAxis.axisColor = "white";
+            categoryAxis.color = "white";
+            categoryAxis.axisAlpha = 0.2;
+            categoryAxis.dateFormats = [{ period: 'fff', format: 'JJ:NN:SS' }, { period: 'ss', format: 'JJ:NN:SS' }, { period: 'mm', format: 'JJ:NN' }, { period: 'hh', format: 'JJ:NN' }, { period: 'DD', format: 'MM-DD' }, { period: 'WW', format: 'MM-DD' }, { period: 'MM', format: 'MM' }, { period: 'YYYY', format: 'YYYY' }];
+
+
+            for (var i = 0; i < 6; i++) {
+                var valueAxis1 = new AmCharts.ValueAxis();
+                valueAxis1.axisColor = "white";
+                valueAxis1.labelsEnabled = true;
+                valueAxis1.color = "white";
+                valueAxis1.axisAlpha = 0;
+                valueAxis1.gridAlpha = 0.2;
+                valueAxis1.gridColor = "white";
+                valueAxis1.offset = 0;
+                valueAxis1.precision = sensors[i].precision;
+                 
+                if (i == currentSensor)
+                    chart.addValueAxis(valueAxis1);
+            }
+
+
+            var gT1 = {
+                title: "温度",
+                valueField: "a1",
+                unit: "℃",
+                vaIndex: 0,
+                lineColor: "#89F989",
+                balloonColor: '#217521'
+            };
+            var gH1 = {
+                title: "湿度",
+                valueField: "a2",
+                unit: "%",
+                vaIndex: 1,
+                lineColor: "#84D0F7",
+                balloonColor: '#206B92'
+            };
+            var gDust = {
+                title: "PM2.5",
+                valueField: "a3",
+                unit: "mg/m3",
+                vaIndex: 2,
+                lineColor: "#F37B1D",
+                connect: false
+            };
+            var gAQI = {
+                title: "空气质量",
+                valueField: "a4",
+                unit: "",
+                vaIndex: 3,
+                lineColor: "#EAEA70",
+                balloonColor: '#90902C',
+                connect: false
+            };
+            var ghcho = {
+                title: "甲醛",
+                valueField: "a5",
+                unit: "",
+                vaIndex: 4,
+                lineColor: "#C26EC7",
+                balloonColor: '#923398',
+                connect: false
+            };
+            var gCO2 = {
+                title: "CO2",
+                valueField: "a6",
+                unit: "ppm",
+                vaIndex: 5,
+                lineColor: "#C77F6E",
+                balloonColor: '#90542C',
+                connect: false
+            };
+            data.Graphs = [gT1, gH1, gDust, gAQI,ghcho,gCO2];
+            for (var i = 0; i < data.Graphs.length; i++) {
+                var graph1 = new AmCharts.AmGraph();
+                graph1.valueAxis = chart.valueAxes[data.Graphs[i].vaIndex]; // we have to indicate which value axis should be used
+                graph1.title = data.Graphs[i].title;
+                graph1.valueField = "a" + (i + 1);
+                graph1.bullet = "round";
+                graph1.hideBulletsCount = 30;
+                graph1.lineColor = data.Graphs[i].lineColor;
+                graph1.balloonColor = data.Graphs[i].balloonColor;
+                //graph1.numberFormatter = { precision: sensors[i].precision, decimalSeparator: '.', thousandsSeparator: '' };
+                graph1.bulletSize = 5;
+                graph1.balloonText = data.Graphs[i].title + ":[[value]]" + data.Graphs[i].unit;
+                graph1.type = "smoothedLine";
+                graph1.lineThickness = 1.5;
+                graph1.connect = true;
+                if (i == currentSensor)
+                    chart.addGraph(graph1);
+            }
+
+            // GRAPHS
+            // first graph
+
+
+            // CURSOR
+            var chartCursor = new AmCharts.ChartCursor();
+            chartCursor.cursorPosition = "mouse";
+            chartCursor.categoryBalloonDateFormat = "YYYY-MM-DD JJ:NN:SS";
+            chartCursor.cursorColor = "gray";
+            chart.addChartCursor(chartCursor);
+
+            // SCROLLBAR
+            //            var chartScrollbar = new AmCharts.ChartScrollbar();
+
+            //            chart.addChartScrollbar(chartScrollbar);
+            // chart.zoomOutText = "查看全部";
+
+            //LEGEND
+            //var legend = new AmCharts.AmLegend();
+            //legend.marginLeft = 110;
+            //chart.addLegend(legend);
+
+            // WRITE
+            chart.write("chartDiv");
+
+        })
+    };
+    var loadPieReport = function () {
+        showLoading();
+        $.getJSON("./DeviceHistoryDataPieJson", { deviceId: currentDeviceId, column: sensors[currentSensor].name, startValue: sensors[currentSensor].startValue, endValue: sensors[currentSensor].endValue, startTime: startTime }, function (r) {
+            hideLoading();
+            var sensor = sensors[currentSensor];
+            if (r.Successful == true) {
+                var all = r.Data[0];
+                if (all == 0) all = 1;
+                var ss = r.Data[1];
+                var chart = new Highcharts.Chart({
+                    chart: {
+                        renderTo: 'chartDiv',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        backgroundColor: 'transparent',
+                        type: 'pie'
+                    },
+                    title: {
+                        text: '舒适度：' + (100 * ss / all).toFixed(1) + "% ("+sensor.startValue+"-"+sensor.endValue+" "+sensor.unit+")",
+                        style: {color:'#eeeeee'}
+                    },
+                    tooltip: {
+
+                        formatter: function () {
+                            return '<b>' + this.point.name + '</b>: ' + this.percentage.toFixed(1) + "%";
+                        }
+                    },
+                    legend: {
+
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: false,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: false
+                            },
+                            showInLegend: false,
+                            animation: false,
+                            borderWidth: 0,
+                            shadow:false
+                        }
+                    },
+                    series: [{
+                        name: 'Brands',
+                        colorByPoint: true,
+                        data: [{
+                            color: '#21A021',
+                            name: '舒适',
+                            y: r.Data[1]
+                        }, {
+                            color: '#9CC4ED',
+                            name: '不舒适',
+                            y: r.Data[0] - r.Data[1]
+                        }]
+                    }]
+                });
+            }
+            else
+                alert(r.Message);
+        });
+
+
+    };
+    var loadReport = function () {
+        if (currentReportType == 0)
+            loadLineReport();
+        else
+            loadPieReport();
+    };
+
+    $(function () {
+        loadReport();
+    });
+
+    var showLoading = function () {
+        $("#loadingToast").show();
+    };
+    var hideLoading = function () {
+        $("#loadingToast").hide();
+    };
+
+    var goBackToIndex=function(){
+        if(history.length>1){
+            history.go(-1);
+        }
+        else
+            location.href='/m/pm/dust_info/19239';
+    };
+</script>
+<link href="./temp_files/style5.css" rel="stylesheet">
+
+ 
+<main id="main" class="panel">
+    <!------------------图表数据--------------->
+    <div id="table_date">
+        <div class="toolbar">
+            <a href="javascript:goBackToIndex()" class="close_button">
+                <img src="./temp_files/icon3.png">
+            </a>
+        </div>
+        <!--------------图表导航----------------->
+        <div class="table_nav">
+            <ul id="timeSelect">
+                <li><a class="cur" id="time0A" href="javascript:showLine(0)">实时</a></li>
+                <li><a href="javascript:showLine(1)">一天</a></li>
+                <li><a href="javascript:showLine(2)">一周</a></li>
+                <li><a href="javascript:showLine(3)">一月</a></li>
+                <div class="clear"></div>
+            </ul>
+        </div>
+        <!--------------图表----------------->
+        <div class="table_con">
+            <div id="chartDiv" style="width: 100%; height: 220px; text-align: left; padding-top: 20px; overflow: hidden;"><div style="overflow: hidden; position: relative; text-align: left; width: 346px; height: 220px; cursor: default;"><svg version="1.1" style="position: absolute; width: 346px; height: 220px;"><g><path cs="100,100" d="M0.5,0.5 L345.5,0.5 L345.5,219.5 L0.5,219.5 Z" fill="#FFFFFF" stroke="#000000" fill-opacity="0" stroke-width="1" stroke-opacity="0"></path><path cs="100,100" d="M0.5,0.5 L273.5,0.5 L273.5,179.5 L0.5,179.5 Z" fill="#FFFFFF" stroke="#000000" fill-opacity="0" stroke-width="1" stroke-opacity="0" transform="translate(52,10)"></path></g><g><g transform="translate(52,10)"><g><path cs="100,100" d="M144.5,0.5 L144.5,5.5" fill="none" stroke-width="1" stroke-opacity="0.2" stroke="white" transform="translate(0,179)"></path><path cs="100,100" d="M144.5,179.5 L144.5,179.5 L144.5,0.5" fill="none" stroke-width="1" stroke-dasharray="1" stroke-opacity="0.2" stroke="white"></path></g></g><g transform="translate(52,10)" visibility="visible"><g><path cs="100,100" d="M0.5,179.5 L0.5,179.5 L273.5,179.5" fill="none" stroke-width="1" stroke-opacity="0.2" stroke="white"></path></g><g><path cs="100,100" d="M0.5,119.5 L0.5,119.5 L273.5,119.5" fill="none" stroke-width="1" stroke-opacity="0.2" stroke="white"></path></g><g><path cs="100,100" d="M0.5,60.5 L0.5,60.5 L273.5,60.5" fill="none" stroke-width="1" stroke-opacity="0.2" stroke="white"></path></g><g><path cs="100,100" d="M0.5,0.5 L0.5,0.5 L273.5,0.5" fill="none" stroke-width="1" stroke-opacity="0.2" stroke="white"></path></g></g></g><g></g><g></g><g></g><g><g transform="translate(52,10)"><g></g><g clip-path="url(#AmChartsEl-3)"><path cs="100,100" d="M0,107 Q0,107,0,107 Q0,107,1,107 Q1,107,1,107 Q1,107,1,107 Q1,107,1,107 Q2,107,2,107 Q2,107,3,107 Q3,107,3,107 Q3,107,3,107 Q3,107,4,107 Q4,107,4,107 Q4,107,4,107 Q4,107,4,107 Q4,107,5,107 Q5,107,5,107 Q5,107,5,107 Q5,107,5,107 Q6,108,6,108 Q6,108,7,108 Q7,108,7,107 Q7,106,7,105 Q7,103,8,101 Q8,99,8,97 Q8,96,8,95 Q8,94,8,94 Q9,94,9,94 Q9,94,10,95 Q10,95,10,95 Q10,95,10,95 Q10,95,11,95 Q11,95,11,95 Q11,95,11,95 Q11,95,11,95 Q11,96,12,96 Q12,96,12,96 Q12,96,12,95 Q12,94,12,93 Q13,91,13,90 Q13,88,14,86 Q14,85,14,84 Q14,83,14,83 Q14,83,15,83 Q15,83,15,84 Q15,84,15,84 Q15,84,15,84 Q15,84,16,84 Q16,84,16,84 Q16,84,16,84 Q16,84,16,84 Q17,84,17,84 Q17,84,18,84 Q18,84,18,84 Q18,84,18,84 Q18,84,19,84 Q19,84,19,84 Q19,84,19,84 Q19,84,19,84 Q19,84,20,84 Q20,84,20,84 Q20,84,20,84 Q20,84,20,84 Q21,84,21,84 Q21,84,22,84 Q22,84,22,84 Q22,84,22,84 Q22,84,23,84 Q23,84,23,84 Q23,84,23,84 Q23,84,23,84 Q24,84,24,84 Q24,84,25,84 Q25,84,25,84 Q25,84,25,84 Q25,84,26,84 Q26,84,26,84 Q26,84,26,84 Q26,84,26,84 Q26,85,27,85 Q27,85,27,85 Q27,85,27,84 Q27,83,27,82 Q28,80,28,78 Q28,76,29,74 Q29,73,29,72 Q29,71,29,71 Q29,71,30,71 Q30,71,30,72 Q30,72,30,72 Q30,72,30,72 Q30,72,31,72 Q31,72,31,72 Q31,72,31,72 Q31,72,31,72 Q32,72,32,72 Q32,72,33,72 Q33,72,33,72 Q33,72,33,72 Q33,72,34,72 Q34,72,34,72 Q34,72,34,72 Q34,72,34,72 Q34,72,35,72 Q35,72,35,72 Q35,72,35,72 Q35,72,35,72 Q36,73,36,73 Q36,73,37,73 Q37,73,37,72 Q37,71,37,70 Q37,68,38,66 Q38,64,38,62 Q38,61,38,60 Q38,59,38,59 Q39,59,39,59 Q39,59,40,60 Q40,60,40,60 Q40,60,40,60 Q40,60,41,60 Q41,60,41,60 Q41,60,41,60 Q41,60,41,60 Q41,60,42,60 Q42,60,42,60 Q42,60,42,60 Q42,60,42,60 Q43,60,43,60 Q43,60,44,60 Q44,60,44,60 Q44,60,44,60 Q44,60,45,60 Q45,60,45,60 Q45,60,45,60 Q45,60,45,60 Q45,61,46,61 Q46,61,46,61 Q46,61,46,60 Q46,59,46,58 Q47,56,47,54 Q47,52,48,50 Q48,49,48,48 Q48,47,48,47 Q48,47,49,47 Q49,47,49,48 Q49,48,49,48 Q49,48,49,48 Q50,48,50,48 Q50,48,51,48 Q51,48,51,48 Q51,48,51,48 Q51,48,52,48 Q52,48,52,48 Q52,48,52,48 Q52,48,52,48 Q52,48,53,48 Q53,48,53,48 Q53,48,53,48 Q53,48,53,48 Q54,48,54,48 Q54,48,55,48 Q55,48,55,48 Q55,48,55,48 Q55,48,56,48 Q56,48,56,48 Q56,48,56,48 Q56,48,56,48 Q56,48,57,48 Q57,48,57,48 Q57,48,57,48 Q57,48,57,48 Q58,48,58,48 Q58,48,59,48 Q59,48,59,48 Q59,48,59,48 Q59,48,60,48 Q60,48,60,48 Q60,48,60,48 Q60,48,60,48 Q60,48,61,48 Q61,48,61,48 Q61,48,61,48 Q61,48,61,48 Q62,48,62,48 Q62,48,63,48 Q63,48,63,48 Q63,48,63,48 Q63,48,64,48 Q64,48,64,48 Q64,48,64,48 Q64,48,64,48 Q65,48,65,48 Q65,48,66,48 Q66,48,66,48 Q66,48,66,48 Q66,48,67,48 Q67,48,67,48 Q67,48,67,48 Q67,48,67,48 Q67,48,68,48 Q68,48,68,48 Q68,48,68,48 Q68,48,68,48 Q69,49,69,49 Q69,49,70,49 Q70,49,70,48 Q70,47,70,46 Q70,44,71,42 Q71,40,71,38 Q71,37,71,36 Q71,35,71,35 Q71,35,72,35 Q72,35,72,36 Q72,36,72,36 Q72,36,72,36 Q73,36,73,36 Q73,36,74,36 Q74,36,74,36 Q74,36,74,36 Q74,36,75,36 Q75,36,75,36 Q75,36,75,36 Q75,36,75,36 Q75,36,76,36 Q76,36,76,36 Q76,36,76,36 Q76,36,76,36 Q77,36,77,36 Q77,36,78,36 Q78,36,78,36 Q78,36,78,36 Q78,36,79,36 Q79,36,79,36 Q79,36,79,36 Q79,36,79,36 Q80,36,80,36 Q80,36,81,36 Q81,36,81,36 Q81,36,81,36 Q81,36,82,36 Q82,36,82,36 Q82,36,82,36 Q82,36,82,36 Q82,36,83,36 Q83,36,83,36 Q83,36,83,36 Q83,36,83,36 Q84,36,84,36 Q84,36,85,36 Q85,36,85,36 Q85,36,85,36 Q85,36,86,36 Q86,36,86,36 Q86,36,86,36 Q86,36,86,36 Q86,36,87,36 Q87,36,87,36 Q87,36,87,36 Q87,36,87,36 Q88,36,88,36 Q88,36,89,36 Q89,36,89,36 Q89,36,89,36 Q89,36,90,36 Q90,36,90,36 Q90,36,90,36 Q90,36,90,36 Q90,36,91,36 Q91,36,91,36 Q91,36,91,36 Q91,36,91,36 Q92,36,92,36 Q92,36,93,36 Q93,36,93,36 Q93,36,93,36 Q93,36,94,36 Q94,36,94,36 Q94,36,94,36 Q94,36,94,36 Q95,35,95,35 Q95,35,96,35 Q96,35,96,36 Q96,37,96,39 Q96,41,97,43 Q97,45,97,46 Q97,48,97,48 Q97,48,97,46 Q97,44,98,42 Q98,40,98,38 Q98,36,98,36 Q98,36,98,38 Q99,39,99,41 Q99,43,100,45 Q100,47,100,48 Q100,49,100,49 Q100,49,101,49 Q101,49,101,48 Q101,48,101,48 Q101,48,101,48 Q101,48,102,48 Q102,48,102,48 Q102,48,102,48 Q102,48,102,48 Q103,48,103,48 Q103,48,104,48 Q104,48,104,48 Q104,48,104,48 Q104,48,105,48 Q105,48,105,48 Q105,48,105,48 Q105,48,105,48 Q105,48,106,48 Q106,48,106,48 Q106,48,106,48 Q106,48,106,48 Q107,48,107,48 Q107,48,108,48 Q108,48,108,48 Q108,48,108,48 Q108,48,109,48 Q109,48,109,48 Q109,48,109,48 Q109,48,109,48 Q110,48,110,48 Q110,48,111,48 Q111,48,111,48 Q111,48,111,48 Q111,48,112,48 Q112,48,112,48 Q112,48,112,48 Q112,48,112,48 Q112,48,113,48 Q113,48,113,48 Q113,48,113,48 Q113,48,113,48 Q114,48,114,48 Q114,48,115,48 Q115,48,115,48 Q115,48,115,48 Q115,48,116,48 Q116,48,116,48 Q116,48,116,48 Q116,48,116,48 Q116,48,117,48 Q117,48,117,48 Q117,48,117,48 Q117,48,117,48 Q118,48,118,48 Q118,48,119,48 Q119,48,119,48 Q119,48,119,48 Q119,48,120,48 Q120,48,120,48 Q120,48,120,48 Q120,48,120,48 Q120,48,121,48 Q121,48,121,48 Q121,48,121,48 Q121,48,121,48 Q122,48,122,48 Q122,48,123,48 Q123,48,123,48 Q123,48,123,48 Q123,48,124,48 Q124,48,124,48 Q124,48,124,48 Q124,48,124,48 Q125,48,125,48 Q125,48,126,48 Q126,48,126,48 Q126,48,126,48 Q126,48,127,48 Q127,48,127,48 Q127,48,127,48 Q127,48,127,48 Q127,48,128,48 Q128,48,128,48 Q128,48,128,48 Q128,48,128,48 Q129,48,129,48 Q129,48,130,48 Q130,48,130,48 Q130,48,130,48 Q130,48,131,48 Q131,48,131,48 Q131,48,131,48 Q131,48,131,48 Q131,48,132,48 Q132,48,132,48 Q132,48,132,48 Q132,48,132,48 Q133,48,133,48 Q133,48,134,48 Q134,48,134,48 Q134,48,134,48 Q134,48,135,48 Q135,48,135,48 Q135,48,135,48 Q135,48,135,48 Q136,48,136,48 Q136,48,137,48 Q137,48,137,48 Q137,48,137,48 Q137,48,138,48 Q138,48,138,48 Q138,48,138,48 Q138,48,138,48 Q138,48,139,48 Q139,48,139,48 Q139,48,139,48 Q139,48,139,48 Q140,48,140,48 Q140,48,141,48 Q141,48,141,48 Q141,48,141,48 Q141,47,142,47 Q142,47,142,47 Q142,47,142,48 Q142,49,142,50 Q142,52,143,54 Q143,56,143,58 Q143,59,143,60 Q143,61,143,61 Q144,61,144,61 Q144,61,145,60 Q145,60,145,60 Q145,60,145,60 Q145,60,146,60 Q146,60,146,60 Q146,60,146,60 Q146,60,146,60 Q146,60,147,60 Q147,60,147,60 Q147,60,147,60 Q147,60,147,60 Q148,60,148,60 Q148,60,149,60 Q149,60,149,60 Q149,60,149,60 Q149,60,150,60 Q150,60,150,60 Q150,60,150,60 Q150,60,150,60 Q151,60,151,60 Q151,60,152,60 Q152,60,152,60 Q152,60,152,60 Q152,60,153,60 Q153,60,153,60 Q153,60,153,60 Q153,60,153,60 Q153,59,154,59 Q154,59,154,59 Q154,59,154,60 Q154,61,154,63 Q155,65,155,67 Q155,69,156,70 Q156,72,156,72 Q156,72,156,70 Q156,68,157,66 Q157,64,157,62 Q157,60,157,60 Q157,60,157,62 Q157,64,158,66 Q158,68,158,70 Q158,72,158,72 Q158,72,158,70 Q159,68,159,66 Q159,64,160,62 Q160,60,160,60 Q160,60,160,62 Q160,63,161,65 Q161,67,161,69 Q161,71,161,72 Q161,73,161,73 Q161,74,162,74 Q162,74,162,73 Q162,73,162,72 Q162,71,162,69 Q163,67,163,65 Q163,63,164,62 Q164,60,164,60 Q164,60,164,62 Q164,63,165,65 Q165,67,165,69 Q165,71,165,72 Q165,73,165,73 Q166,73,166,73 Q166,73,167,72 Q167,72,167,72 Q167,72,167,72 Q167,73,168,73 Q168,73,168,73 Q168,73,168,72 Q168,71,168,70 Q168,68,169,66 Q169,64,169,62 Q169,61,169,60 Q169,59,169,59 Q170,59,170,59 Q170,59,171,59 Q171,59,171,60 Q171,61,171,62 Q171,64,172,66 Q172,68,172,70 Q172,71,172,72 Q172,73,172,73 Q172,73,173,73 Q173,73,173,72 Q173,72,173,72 Q173,72,173,72 Q174,72,174,72 Q174,72,175,72 Q175,72,175,72 Q175,72,175,72 Q175,72,176,72 Q176,72,176,72 Q176,72,176,72 Q176,72,176,72 Q176,72,177,72 Q177,72,177,72 Q177,72,177,72 Q177,72,177,72 Q178,72,178,72 Q178,72,179,72 Q179,72,179,72 Q179,72,179,72 Q179,72,180,72 Q180,72,180,72 Q180,72,180,72 Q180,72,180,72 Q181,72,181,72 Q181,72,182,72 Q182,72,182,72 Q182,72,182,72 Q182,72,183,72 Q183,72,183,72 Q183,72,183,72 Q183,72,183,72 Q183,72,184,72 Q184,72,184,72 Q184,72,184,72 Q184,72,184,72 Q185,72,185,72 Q185,72,186,72 Q186,72,186,72 Q186,72,186,72 Q186,71,187,71 Q187,71,187,71 Q187,71,187,72 Q187,73,187,74 Q187,76,188,78 Q188,80,188,82 Q188,83,188,84 Q188,85,188,85 Q189,85,189,85 Q189,85,190,84 Q190,84,190,84 Q190,84,190,84 Q190,84,191,84 Q191,84,191,84 Q191,84,191,84 Q191,84,191,84 Q191,84,192,84 Q192,84,192,84 Q192,84,192,84 Q192,84,192,84 Q193,84,193,84 Q193,84,194,84 Q194,84,194,84 Q194,84,194,84 Q194,84,195,84 Q195,84,195,84 Q195,84,195,84 Q195,84,195,84 Q196,84,196,84 Q196,84,197,84 Q197,84,197,84 Q197,84,197,84 Q197,83,198,83 Q198,83,198,83 Q198,83,198,84 Q198,85,198,86 Q198,88,199,90 Q199,92,199,94 Q199,95,199,95 Q199,95,199,93 Q200,92,200,90 Q200,87,201,86 Q201,84,201,84 Q201,84,201,85 Q201,87,202,89 Q202,91,202,93 Q202,94,202,95 Q202,96,202,96 Q202,96,203,96 Q203,96,203,95 Q203,95,203,95 Q203,95,203,95 Q204,95,204,95 Q204,95,205,95 Q205,95,205,95 Q205,95,205,95 Q205,95,206,95 Q206,95,206,95 Q206,95,206,95 Q206,95,206,95 Q206,95,207,95 Q207,95,207,95 Q207,95,207,95 Q207,95,207,95 Q208,94,208,94 Q208,94,209,94 Q209,94,209,95 Q209,96,209,97 Q209,99,210,101 Q210,103,210,105 Q210,106,210,107 Q210,108,210,108 Q211,108,211,108 Q211,108,212,107 Q212,107,212,107 Q212,107,212,107 Q212,107,213,107 Q213,107,213,107 Q213,107,213,107 Q213,107,213,107 Q213,107,214,107 Q214,107,214,107 Q214,107,214,107 Q214,107,214,107 Q215,107,215,107 Q215,107,216,107 Q216,107,216,107 Q216,107,216,107 Q216,108,217,108 Q217,108,217,108 Q217,108,217,107 Q217,106,217,105 Q217,103,218,101 Q218,99,218,97 Q218,96,218,95 Q218,94,218,94 Q219,94,219,94 Q219,94,220,95 Q220,95,220,95 Q220,95,220,95 Q220,95,221,95 Q221,95,221,95 Q221,95,221,95 Q221,95,221,95 Q222,95,222,95 Q222,95,223,95 Q223,95,223,95 Q223,95,223,95 Q223,95,224,95 Q224,95,224,95 Q224,95,224,95 Q224,95,224,95 Q224,96,225,96 Q225,96,225,96 Q225,96,225,95 Q225,94,225,93 Q226,91,226,90 Q226,88,227,86 Q227,85,227,84 Q227,83,227,83 Q227,83,228,83 Q228,83,228,84 Q228,84,228,84 Q228,84,228,84 Q228,84,229,84 Q229,84,229,84 Q229,84,229,84 Q229,84,229,84 Q230,84,230,84 Q230,84,231,84 Q231,84,231,84 Q231,84,231,84 Q231,84,232,84 Q232,84,232,84 Q232,84,232,84 Q232,84,232,84 Q232,84,233,84 Q233,84,233,84 Q233,84,233,84 Q233,84,233,84 Q234,83,234,83 Q234,83,235,83 Q235,83,235,84 Q235,85,235,86 Q235,88,236,90 Q236,91,236,93 Q236,94,236,95 Q236,96,237,96 Q237,96,238,96 Q238,96,238,95 Q239,95,239,95 Q239,95,239,95 Q239,95,240,95 Q240,95,240,95 Q240,95,240,95 Q240,95,240,95 Q241,94,241,94 Q241,94,242,94 Q242,94,242,95 Q242,96,242,97 Q242,99,243,101 Q243,103,243,105 Q243,106,243,107 Q243,108,243,108 Q243,107,244,107 Q244,107,244,106 Q244,106,244,107 Q244,108,244,109 Q245,111,245,113 Q245,115,246,117 Q246,118,246,119 Q246,120,246,120 Q246,120,247,120 Q247,120,247,119 Q247,119,247,119 Q247,119,247,119 Q247,119,248,119 Q248,119,248,119 Q248,119,248,119 Q248,119,248,119 Q249,119,249,119 Q249,119,250,119 Q250,119,250,119 Q250,119,250,119 Q250,119,251,119 Q251,119,251,119 Q251,119,251,119 Q251,119,251,119 Q252,118,252,118 Q252,118,253,118 Q253,118,253,119 Q253,120,253,121 Q253,123,254,125 Q254,127,254,129 Q254,130,254,131 Q254,132,254,132 Q254,132,255,132 Q255,132,255,131 Q255,131,255,131 Q255,131,255,131 Q256,131,256,131 Q256,131,257,131 Q257,131,257,131 Q257,131,257,131 Q257,131,258,131 Q258,131,258,131 Q258,131,258,131 Q258,131,258,131 Q258,131,259,131 Q259,131,259,131 Q259,131,259,131 Q259,131,259,131 Q260,131,260,131 Q260,131,261,131 Q261,131,261,131 Q261,131,261,131 Q261,131,262,131 Q262,131,262,131 Q262,131,262,131 Q262,131,262,131 Q262,130,263,130 Q263,130,263,130 Q263,130,263,131 Q263,132,263,133 Q264,135,264,137 Q264,139,265,141 Q265,142,265,143 Q265,144,265,144 Q265,144,266,144 Q266,144,266,143 Q266,143,266,143 Q266,143,266,143 Q267,143,267,143 Q267,143,268,143 Q268,143,268,143 Q268,143,268,143 Q268,142,269,142 Q269,142,269,142 Q269,142,269,143 Q269,144,269,145 Q269,147,270,149 Q270,151,270,153 Q270,154,270,155 Q270,156,270,156 Q271,156,271,156 Q271,156,272,155 Q272,155,272,155 Q272,155,272,155 Q272,155,273,155 Q273,155,273,155 Q273,155,273,155M0,0 L0,0" fill="#89F989" fill-opacity="0" stroke-width="1.5" stroke-opacity="1" stroke="#89F989"></path></g><g></g><clippath id="AmChartsEl-3"><rect x="0" y="0" width="275" height="181" rx="0" ry="0" stroke-width="0"></rect></clippath></g></g><g clip-path="url(#AmChartsEl-2)"></g><g><g transform="translate(52,10)"><text y="5.5" fill="white" font-family="Verdana" font-size="11" text-anchor="start" transform="translate(147,192)"><tspan y="5.5" x="0">15:00</tspan></text></g><g transform="translate(52,10)" visibility="visible"><text y="5.5" fill="white" font-family="Verdana" font-size="11" text-anchor="end" transform="translate(-12,177)"><tspan y="5.5" x="0">19.0</tspan></text><text y="5.5" fill="white" font-family="Verdana" font-size="11" text-anchor="end" transform="translate(-12,117)"><tspan y="5.5" x="0">19.5</tspan></text><text y="5.5" fill="white" font-family="Verdana" font-size="11" text-anchor="end" transform="translate(-12,58)"><tspan y="5.5" x="0">20.0</tspan></text><text y="5.5" fill="white" font-family="Verdana" font-size="11" text-anchor="end" transform="translate(-12,-2)"><tspan y="5.5" x="0">20.5</tspan></text></g></g><g><path cs="100,100" d="M0.5,0.5 L273.5,0.5" fill="none" stroke-width="1" stroke-opacity="0.2" stroke="white" transform="translate(52,189)"></path><path cs="100,100" d="M0.5,0.5 L0.5,179.5" fill="none" stroke-width="1" stroke-opacity="0" stroke="white" transform="translate(52,10)" visibility="visible"></path></g><g><g transform="translate(52,10)" visibility="hidden"><path cs="100,100" d="M0.5,0.5 L0.5,0.5 L0.5,179.5" fill="none" stroke-width="1" stroke-opacity="1" stroke="gray" visibility="hidden"></path></g></g><g></g><g><g transform="translate(52,10)"></g></g><g><g></g></g><g id="balloons"></g><g><g transform="translate(239,10)" visibility="hidden"><rect x="0.5" y="0.5" width="87" height="29" rx="0" ry="0" stroke-width="0" fill="#000000" stroke="#000000" fill-opacity="0.15" stroke-opacity="0.15" visibility="hidden"></rect><image x="0" y="0" width="16" height="16" xlink:href="./lens.png" transform="translate(7,6)"></image><text y="5.5" fill="#000000" font-family="Verdana" font-size="11" text-anchor="start" transform="translate(29,13)"><tspan y="5.5" x="0">Show all</tspan></text></g></g><g></g><clippath id="AmChartsEl-2"><rect x="52" y="10" width="273" height="179" rx="0" ry="0" stroke-width="0"></rect></clippath></svg></div></div>
+
+        </div>
+        <div class="tag_con" id="reportTypeSelect">
+            <a class="cur" href="javascript:changeReportType(0)"><img src="./temp_files/s_icon.png">趋势</a>
+            <a href="javascript:changeReportType(1)"><img src="./temp_files/o_icon.png">分析</a>
+        </div>
+        
+        <!--------------三项数据----------------->
+        <div class="three_data">
+            <ul id="sensors">
+                    <li id="ds0" onclick="changeSensor(0)" class="cur"><span><img src="./temp_files/i0.png"></span><p>
+                         19℃</p></li>
+                    <li id="ds1" onclick="changeSensor(1)" class=""><span><img src="./temp_files/i1.png"></span><p>
+                         41%</p></li>
+                    <li id="ds3" onclick="changeSensor(3)" class=""><span><img src="./temp_files/i3.png"></span><p>
+                         202</p></li>
+                    <li id="ds4" onclick="changeSensor(4)" class=""><span><img src="./temp_files/i4.png"></span><p>
+                         0.026mg/m3</p></li>
+
+                
+                <div class="clear"></div>
+            </ul>
+        </div>
+
+        <!--------------更新时间----------------->
+        <div class="update_time">
+            <p style="color:#74aac8">上次更新：2017-02-02 16:34</p>
+        </div>
+    </div>
+</main>
+
+<div id="loadingToast" class="weui_loading_toast" style="display: none;">
+    <div class="weui_mask_transparent"></div>
+    <div class="weui_toast">
+        <div class="weui_loading">
+            <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+        </div>
+        <p class="weui_toast_content">数据加载中</p>
+    </div>
+</div>
+
+
+</body></html>
