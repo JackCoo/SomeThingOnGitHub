@@ -71,7 +71,7 @@ public class test {
 				//获取一子节点并放入map集合
 				Element childElement = it0.next();
 				Iterator<Element> it1 = childElement.elementIterator();
-				while()		
+				while();	
 			}
 			
 			
